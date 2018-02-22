@@ -1,0 +1,40 @@
+## IDE files
+*.komodo*
+*.sublime*
+.idea/
+
+## OS specific files
+.DS_Store
+.DS_Store?
+.fuse*
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Log files
+npm-debug.log
+v8.log
+*.cpuprofile
+callgrind*
+*.wtf-trace
+
+# Dependencies
+node_modules/
+
+# Coverage directory used by istanbul
+.nyc_output/
+coverage/
+
+# Locks
+package-lock.json
+npm-shrinkwrap.json
+yarn.lock
+
+# Others
+*.bin
+
+# Ignore test files
+scratch*
+log.json
