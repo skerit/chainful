@@ -10,6 +10,8 @@
 	"main"            : "lib/init.js",
 	"bin"             : "bin/execbin.js",
 	"dependencies"    : {
+		"elliptic"    : "~6.4.0",
+		"jsrsasign"   : "~8.0.6",
 		"msgpack"     : "~1.0.2",
 		"protoblast"  : "~0.5.1"
 	},
