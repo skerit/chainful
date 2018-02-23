@@ -10,6 +10,7 @@
 	"main"            : "lib/init.js",
 	"bin"             : "bin/execbin.js",
 	"dependencies"    : {
+		"bson"        : "~1.0.4",
 		"protoblast"  : "~0.5.1"
 	},
 	"devDependencies" : {
