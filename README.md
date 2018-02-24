@@ -52,7 +52,7 @@
 
 ## Introduction
 
-This repository contains a personal skeleton that I use when I publish my [npm packages](https://www.npmjs.com/~skerit).
+Blockchains do not always have to be used for cryptocurrencies: presenting `chainful` to implement your own distributed database.
 
 ## Install
 
@@ -62,9 +62,15 @@ npm install chainful
 
 ## Usage
 
-```js
-var Chainful = require('chainful');
-```
+There's [an example on how to create a basic chain](https://github.com/skerit/chainful/blob/master/example/create_basic_chain.js) in the `example` folder.
+
+## Project future
+
+The next big things on the todo list:
+
+* Adding methods that can be used to sync with other peers
+* Handling forks
+* ...
 
 ## Contributing
 Contributions are REALLY welcome.
