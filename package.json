@@ -2,7 +2,7 @@
 	"name"            : "chainful",
 	"description"     : "Implement your own blockchain",
 	"author"          : "Jelle De Loecker <jelle@develry.be>",
-	"version"         : "0.1.0",
+	"version"         : "0.1.1-alpha",
 	"repository"      : "skerit/chainful",
 	"license"         : "MIT",
 	"keywords"        : ["blockchain"],
@@ -26,6 +26,6 @@
 		"report-coverage" : "cat ./coverage/lcov.info | coveralls"
 	},
 	"engines": {
-		"node": ">=4.8"
+		"node": ">=5"
 	}
 }
