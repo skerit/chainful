@@ -1,5 +1,8 @@
-var assert = require('assert'),
-    crypto = require('crypto'),
+var libpath = require('path'),
+    assert  = require('assert'),
+    crypto  = require('crypto'),
+    tmp     = require('tmp'),
+    fs      = require('fs'),
     genesis_block,
     target_buffer = new Buffer(0),
     mined_block,
@@ -7,6 +10,7 @@ var assert = require('assert'),
     public_key,
     ChainfulNS,
     main_chain,
+    temp_dir,
     Blast,
     ecdh;
 
@@ -15,6 +19,9 @@ ecdh.generateKeys();
 
 private_key = ecdh.getPrivateKey(null, 'compressed');
 public_key = ecdh.getPublicKey(null, 'compressed');
+
+// Make sure temporary files get cleaned up
+tmp.setGracefulCleanup();
 
 describe('Chainful', function() {
 
@@ -163,7 +170,9 @@ describe('Chainful', function() {
 				write: function(buffer) {
 					target_buffer = Buffer.concat([target_buffer, buffer]);
 				},
-				end: function() {}
+				end: function(callback) {
+					callback();
+				}
 			}
 
 			main_chain.storeChain(dummy_stream, function stored(err) {
@@ -175,6 +184,39 @@ describe('Chainful', function() {
 				assert.equal(target_buffer.length > 10, true, 'The target buffer should not be empty');
 				done();
 
+			}).catch(function onErr(err) {
+				done();
+			});
+		});
+
+		it('should store the chain to a directory', function(done) {
+
+			// Create a temporary directory
+			// "unsafeCleanup" means "delete directory even if there are files in it"
+			temp_dir = tmp.dirSync({unsafeCleanup: true});
+
+			// Store the chain in that directory
+			main_chain.storeChain(temp_dir.name, function stored(err) {
+
+				var file_path,
+				    stat;
+
+				if (err) {
+					throw err;
+				}
+
+				file_path = libpath.resolve(temp_dir.name, '000000.chainful');
+
+				// The folder should contain the file
+				assert.equal(fs.existsSync(file_path), true);
+
+				// Get the stats object
+				stat = fs.statSync(file_path);
+
+				assert.ok(stat.size > 0, 'The stored chain is empty!');
+				assert.ok(stat.size > 200, 'The stored chain is too small: ' + stat.size);
+
+				done();
 			}).catch(function onErr(err) {
 				done();
 			});
@@ -205,7 +247,50 @@ describe('Chainful', function() {
 			});
 		});
 
-		it('should be verifyable', function(done) {
+		it('should have restored a valid chain', function(done) {
+			new_chain.isValid(function isValid(err, is_valid, last_index) {
+
+				if (err) {
+					throw err;
+				}
+
+				assert.equal(is_valid, true, 'The chain should be valid');
+				assert.equal(last_index, 1, 'The last index should be 1, since there are only 2 blocks');
+				done();
+			}).catch(function gotErr(err) {
+				done();
+			});
+		});
+	});
+
+	describe('#loadChain(source_dir, callback)', function() {
+
+		var new_chain;
+
+		it('should load in a chain from a directory', function(done) {
+
+			new_chain = new ChainfulNS.Chainful();
+
+			new_chain.loadChain(temp_dir.name, function loaded(err) {
+
+				if (err) {
+					throw err;
+				}
+
+				assert.equal(new_chain.chain.length, main_chain.chain.length);
+				assert.equal(new_chain.chain[0].hash_string, main_chain.chain[0].hash_string);
+
+				// The transaction data of the second block should match
+				assert.deepEqual(new_chain.chain[1].transactions[0].data, main_chain.chain[1].transactions[0].data)
+
+				done();
+
+			}).catch(function gotErr(err) {
+				done();
+			});
+		});
+
+		it('should have restored a valid chain', function(done) {
 			new_chain.isValid(function isValid(err, is_valid, last_index) {
 
 				if (err) {
