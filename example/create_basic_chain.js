@@ -1,7 +1,14 @@
 var Chainful = require('../index.js'),
+    tmp_dir,
     crypto   = require('crypto'),
     chain    = new Chainful.Chainful(),
     ecdh     = crypto.createECDH('secp256k1');
+
+if (process.argv[2]) {
+	tmp_dir = process.argv[2];
+} else {
+	throw new Error('Please provide a directory to store the chain to');
+}
 
 // Generate some testkeys
 ecdh.generateKeys();
@@ -69,7 +76,7 @@ chain.createGenesisBlock(async function gotBlock(err, block) {
 		console.log('Chain is valid, storing chain to directory...');
 
 		// Store the chain as a binary file in a directory
-		chain.storeChain('/tmp/path/to/directory', function done(err) {
+		chain.storeChain(tmp_dir, function done(err) {
 
 			if (err) {
 				return console.error('Failed to store directory:', err);
@@ -81,7 +88,7 @@ chain.createGenesisBlock(async function gotBlock(err, block) {
 			let new_chain = new Chainful.Chainful();
 
 			// And load it from the binary file
-			new_chain.loadChain('/tmp/path/to/directory', function done(err) {
+			new_chain.loadChain(tmp_dir, function done(err) {
 
 				if (err) {
 					return console.error('Failed to load chain from directory:', err);
