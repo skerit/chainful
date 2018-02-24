@@ -181,7 +181,7 @@ describe('Chainful', function() {
 		});
 	});
 
-	describe('#loadFileBuffer(buffer, callback)', function() {
+	describe('#loadFromBuffer(buffer, callback)', function() {
 
 		var new_chain;
 
@@ -189,7 +189,7 @@ describe('Chainful', function() {
 
 			new_chain = new ChainfulNS.Chainful();
 
-			new_chain.loadFileBuffer(target_buffer, function loaded(err) {
+			new_chain.loadFromBuffer(target_buffer, function loaded(err) {
 
 				if (err) {
 					throw err;
@@ -221,7 +221,3 @@ describe('Chainful', function() {
 		});
 	});
 });
-
-function genesisBlockTests(block) {
-
-}
