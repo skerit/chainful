@@ -5,7 +5,8 @@
 * The first transaction in a block indicates who mined it
 * Add `Transaction#equals(transaction)`
 * Add `Block#contains(transaction)`
-* Add `Block#releaseTransactions`
+* Add `Block#releaseTransactions()`
+* Add `Transaction#timestamp`
 
 ## 0.1.0 (2018-02-24)
 
