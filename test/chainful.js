@@ -62,7 +62,7 @@ describe('Chainful', function() {
 		it('should create the first block of a chain', function(done) {
 			this.timeout(5000);
 
-			main_chain.createGenesisBlock(function gotBlock(err, block) {
+			main_chain.createGenesisBlock(private_key, public_key, function gotBlock(err, block) {
 
 				if (err) {
 					throw err;
@@ -74,7 +74,7 @@ describe('Chainful', function() {
 				assert.equal(block.index, 0, 'The genesis block should have index 0');
 				assert.equal(block.parent, undefined, 'The genesis block should have no parent');
 				assert.equal(typeof block.hash_string, 'string', 'The genesis block should have been mined and have a hash');
-				assert.equal(block.transactions.length, 0, 'The genesis block should have no transactions');
+				assert.equal(block.transactions.length, 1, 'The genesis block should have only 1 transaction');
 
 				assert.equal(main_chain.chain.length, 0, 'The genesis block should be added to the chain manually');
 
@@ -115,7 +115,7 @@ describe('Chainful', function() {
 	describe('#minePendingTransactions()', function() {
 		it('should mine the pending transactions into a new block', function(done) {
 
-			main_chain.minePendingTransactions(function gotBlock(err, block) {
+			main_chain.minePendingTransactions(private_key, public_key, function gotBlock(err, block) {
 
 				if (err) {
 					throw err;
@@ -332,7 +332,7 @@ describe('Chainful', function() {
 			let chain_two = new ChainfulNS.Chainful();
 
 			// Create & hash the first block in the first chain
-			chain_one.createGenesisBlock(function gotBlock(err, block) {
+			chain_one.createGenesisBlock(private_key_one, private_key_two, function gotBlock(err, block) {
 
 				if (err) {
 					throw err;
@@ -351,7 +351,7 @@ describe('Chainful', function() {
 				__Protoblast.Bound.Function.series(function mine(next) {
 					// Mine a new block with the current pending transactions
 					// (the one we just created)
-					chain_one.minePendingTransactions(function done(err, _block) {
+					chain_one.minePendingTransactions(private_key_one, private_key_two, function done(err, _block) {
 
 						if (err) {
 							return next(err);
@@ -370,7 +370,7 @@ describe('Chainful', function() {
 					transaction = chain_one.addTransaction({test: 1}, private_key_one);
 
 					// Mine it again
-					chain_one.minePendingTransactions(function done(err, _block) {
+					chain_one.minePendingTransactions(private_key_one, private_key_two, function done(err, _block) {
 						if (err) {
 							return next(err);
 						}

@@ -20,7 +20,7 @@ let private_key = ecdh.getPrivateKey(null, 'compressed'),
     public_key  = ecdh.getPublicKey(null, 'compressed');
 
 // Create & hash the first block
-chain.createGenesisBlock(async function gotBlock(err, block) {
+chain.createGenesisBlock(private_key, public_key, async function gotBlock(err, block) {
 
 	if (err) {
 		return console.error('Failed to create genesis block:', err);
@@ -44,7 +44,7 @@ chain.createGenesisBlock(async function gotBlock(err, block) {
 
 	// Mine a new block with the current pending transactions
 	// (the one we just created)
-	block = await chain.minePendingTransactions();
+	block = await chain.minePendingTransactions(private_key, public_key);
 
 	console.log('Created second block', block.index);
 	console.log(' - Hash:', block.hash_string, '\n');
@@ -59,7 +59,7 @@ chain.createGenesisBlock(async function gotBlock(err, block) {
 	console.log(' - Signature:', transaction.signature_hex, '\n');
 
 	// Mine it again
-	block = await chain.minePendingTransactions();
+	block = await chain.minePendingTransactions(private_key, public_key);
 
 	console.log('Created third block', block.index);
 	console.log(' - Hash:', block.hash_string, '\n');
