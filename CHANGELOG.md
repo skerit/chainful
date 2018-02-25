@@ -10,6 +10,7 @@
 * Add `Transaction#is_old` which will be true if the transaction is older than 1 day
 * Transactions older than 1 day will be discarded
 * Mining an empty block will throw an error
+* Added a `Blockchain` class which will hold blocks instead of a regular array
 
 ## 0.1.0 (2018-02-24)
 

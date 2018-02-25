@@ -70,13 +70,13 @@ describe('Chainful', function() {
 
 				genesis_block = block;
 
-				assert.equal(block.chain, main_chain, 'The genesis block is missing a link to the chain');
+				assert.equal(block.chainful, main_chain, 'The genesis block is missing a link to the chain');
 				assert.equal(block.index, 0, 'The genesis block should have index 0');
 				assert.equal(block.parent, undefined, 'The genesis block should have no parent');
 				assert.equal(typeof block.hash_string, 'string', 'The genesis block should have been mined and have a hash');
 				assert.equal(block.transactions.length, 1, 'The genesis block should have only 1 transaction');
 
-				assert.equal(main_chain.chain.length, 0, 'The genesis block should be added to the chain manually');
+				assert.equal(main_chain.length, 0, 'The genesis block should be added to the chain manually');
 
 				assert.equal(block.transactions[0].data, 'miner', 'The miner transaction should contain "miner" as data');
 				assert.equal(block.transactions[0].timestamp, block.timestamp, 'The miner transaction should be the same as the block timestamp');
@@ -133,7 +133,7 @@ describe('Chainful', function() {
 				assert.equal(block.index, 1, 'Second mined block should have index 1');
 
 				// Still need to add the block to the chain
-				assert.equal(main_chain.chain.length, 1, 'The new block should not be part of the chain yet');
+				assert.equal(main_chain.length, 1, 'The new block should not be part of the chain yet');
 
 				// The pending transactions list should be empty
 				assert.equal(main_chain.pending_transactions.length, 0, 'The pending transactions list should be empty');
@@ -245,11 +245,11 @@ describe('Chainful', function() {
 					throw err;
 				}
 
-				assert.equal(new_chain.chain.length, main_chain.chain.length);
-				assert.equal(new_chain.chain[0].hash_string, main_chain.chain[0].hash_string);
+				assert.equal(new_chain.length, main_chain.chain.length);
+				assert.equal(new_chain.getByIndex(0).hash_string, main_chain.getByIndex(0).hash_string);
 
 				// The transaction data of the second block should match
-				assert.deepEqual(new_chain.chain[1].transactions[0].data, main_chain.chain[1].transactions[0].data)
+				assert.deepEqual(new_chain.getByIndex(1).transactions[0].data, main_chain.getByIndex(1).transactions[0].data)
 
 				// Get the first block
 				let new_block = new_chain.getByIndex(0);
@@ -303,11 +303,11 @@ describe('Chainful', function() {
 					throw err;
 				}
 
-				assert.equal(new_chain.chain.length, main_chain.chain.length);
-				assert.equal(new_chain.chain[0].hash_string, main_chain.chain[0].hash_string);
+				assert.equal(new_chain.length, main_chain.length);
+				assert.equal(new_chain.getByIndex(0).hash_string, main_chain.getByIndex(0).hash_string);
 
 				// The transaction data of the second block should match
-				assert.deepEqual(new_chain.chain[1].transactions[0].data, main_chain.chain[1].transactions[0].data)
+				assert.deepEqual(new_chain.getByIndex(1).transactions[0].data, main_chain.getByIndex(1).transactions[0].data)
 
 				done();
 
@@ -435,8 +435,8 @@ describe('Chainful', function() {
 						// As I said: you would probably add network logic here.
 						// So: send a request to another network for the wanted blocks,
 						// and then receive them over a Socket as binary data
-						for (; i < chain_one.chain.length; i++) {
-							new_block_buffers.push(chain_one.chain[i].buffer);
+						for (; i < chain_one.length; i++) {
+							new_block_buffers.push(chain_one.getByIndex(i).buffer);
 						}
 
 						// Expect 3 buffers
@@ -452,7 +452,7 @@ describe('Chainful', function() {
 						}
 
 						// The second chain should now have 3 blocks
-						assert.equal(chain_two.chain.length, chain_one.chain.length, 'Chains did not synchronize correctly');
+						assert.equal(chain_two.length, chain_one.length, 'Chains did not synchronize correctly');
 
 						chain_two.isValid(function validated(err) {
 
