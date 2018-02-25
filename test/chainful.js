@@ -68,7 +68,7 @@ describe('Chainful', function() {
 					throw err;
 				}
 
-				genesis_block = block
+				genesis_block = block;
 
 				assert.equal(block.chain, main_chain, 'The genesis block is missing a link to the chain');
 				assert.equal(block.index, 0, 'The genesis block should have index 0');
@@ -77,6 +77,9 @@ describe('Chainful', function() {
 				assert.equal(block.transactions.length, 1, 'The genesis block should have only 1 transaction');
 
 				assert.equal(main_chain.chain.length, 0, 'The genesis block should be added to the chain manually');
+
+				assert.equal(block.transactions[0].data, 'miner', 'The miner transaction should contain "miner" as data');
+				assert.equal(block.transactions[0].timestamp, block.timestamp, 'The miner transaction should be the same as the block timestamp');
 
 				// Add the genesis block
 				main_chain.addBlock(genesis_block);
@@ -136,6 +139,9 @@ describe('Chainful', function() {
 				assert.equal(main_chain.pending_transactions.length, 0, 'The pending transactions list should be empty');
 
 				assert.equal(block.parent, genesis_block);
+
+				assert.equal(block.transactions[0].data, 'miner', 'The miner transaction should contain "miner" as data');
+				assert.equal(block.transactions[0].timestamp, block.timestamp, 'The miner transaction should be the same as the block timestamp');
 
 				main_chain.addBlock(block);
 
@@ -244,6 +250,24 @@ describe('Chainful', function() {
 
 				// The transaction data of the second block should match
 				assert.deepEqual(new_chain.chain[1].transactions[0].data, main_chain.chain[1].transactions[0].data)
+
+				// Get the first block
+				let new_block = new_chain.getByIndex(0);
+
+				assert.equal(new_block.transactions[0].data, 'miner', 'The miner transaction should contain "miner" as data');
+				assert.equal(new_block.transactions[0].timestamp, new_block.timestamp, 'The miner transaction should be the same as the block timestamp');
+
+				// Get the same block from the other chain
+				let old_block = main_chain.getByIndex(0);
+
+				// The 2 blocks should be the same
+				assert.equal(old_block.equals(new_block), true);
+
+				// Now get transactions
+				let new_transaction = new_block.transactions[0],
+				    old_transaction = old_block.transactions[0];
+
+				assert.equal(old_transaction.equals(new_transaction), true);
 
 				done();
 			});
