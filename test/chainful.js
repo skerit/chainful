@@ -309,6 +309,8 @@ describe('Chainful', function() {
 	describe('#setBlockRequester(requester_function)', function() {
 		it('should request blocks & add them', function(done) {
 
+			this.timeout(4000);
+
 			var ecdh = crypto.createECDH('secp256k1');
 
 			// Generate some testkeys
@@ -344,73 +346,105 @@ describe('Chainful', function() {
 					array  : [{a: 1}, {b: 2}]
 				}, private_key_one);
 
-				// Mine a new block with the current pending transactions
-				// (the one we just created)
-				block = await chain_one.minePendingTransactions();
+				__Protoblast.Bound.Function.series(function mine(next) {
+					// Mine a new block with the current pending transactions
+					// (the one we just created)
+					chain_one.minePendingTransactions(function done(err, _block) {
 
-				// Again: add the mined block to the chain
-				chain_one.addBlock(block);
+						if (err) {
+							return next(err);
+						}
 
-				// Queue another transaction
-				transaction = chain_one.addTransaction({test: 1}, private_key_one);
+						block = _block;
 
-				// Mine it again
-				block = await chain_one.minePendingTransactions();
+						// Again: add the mined block to the chain
+						chain_one.addBlock(block);
 
-				// Add it again
-				chain_one.addBlock(block);
+						next();
+					});
+				}, function mineNext(next) {
 
-				// Check if the chain is valid
-				// (verify hashes & signatures)
-				let is_valid = await chain_one.isValid();
+					// Queue another transaction
+					transaction = chain_one.addTransaction({test: 1}, private_key_one);
 
-				await startSecondChain();
+					// Mine it again
+					chain_one.minePendingTransactions(function done(err, _block) {
+						if (err) {
+							return next(err);
+						}
 
-				done();
-			});
+						block = _block;
 
-			// This is the function that will run once the first chain has been set up
-			async function startSecondChain() {
+						// Again: add the mined block to the chain
+						chain_one.addBlock(block);
 
-				// First we'll add some logic to actually request the data
-				// Normally you would add some network logic here,
-				// but for this example we'll just go steal the blocks from block_one
-				//
-				// The `getBlocks` function receives 3 parameters:
-				//  - requested_blocks      : An array of indexes of blocks to get (can also be empty)
-				//  - last_available_block  : The last available block in our chain, so newer once are also welcome
-				//  - callback              : A callback where we can send the array response to
-				chain_two.setBlockRequester(function getBlocks(requested_blocks, last_available_block, callback) {
+						next();
+					});
 
-					var new_block_buffers = [],
-					    i;
+				}, function checkValid(next) {
+					chain_one.isValid(next);
+				}, function startSecondChain(next) {
 
-					// No blocks? Get them all then
-					if (!last_available_block) {
-						i = 0;
-					} else {
-						i = last_available_block.index;
+					// First we'll add some logic to actually request the data
+					// Normally you would add some network logic here,
+					// but for this example we'll just go steal the blocks from block_one
+					//
+					// The `getBlocks` function receives 3 parameters:
+					//  - requested_blocks      : An array of indexes of blocks to get (can also be empty)
+					//  - last_available_block  : The last available block in our chain, so newer once are also welcome
+					//  - callback              : A callback where we can send the array response to
+					chain_two.setBlockRequester(function getBlocks(requested_blocks, last_available_block, callback) {
+
+						var new_block_buffers = [],
+						    i;
+
+						// No blocks? Get them all then
+						if (!last_available_block) {
+							i = 0;
+						} else {
+							i = last_available_block.index;
+						}
+
+						// Get the binary buffers from chain_one
+						// As I said: you would probably add network logic here.
+						// So: send a request to another network for the wanted blocks,
+						// and then receive them over a Socket as binary data
+						for (; i < chain_one.chain.length; i++) {
+							new_block_buffers.push(chain_one.chain[i].buffer);
+						}
+
+						// Expect 3 buffers
+						assert.equal(new_block_buffers.length, 3);
+
+						callback(null, new_block_buffers);
+					});
+
+					chain_two.requestBlocks(function requested(err) {
+
+						if (err) {
+							return next(err);
+						}
+
+						chain_two.isValid(function validated(err) {
+
+							if (err) {
+								return next(err);
+							}
+
+							next();
+						});
+					})
+
+				}, function _done(err) {
+
+					if (err) {
+						throw err;
 					}
 
-					// Get the binary buffers from chain_one
-					// As I said: you would probably add network logic here.
-					// So: send a request to another network for the wanted blocks,
-					// and then receive them over a Socket as binary data
-					for (; i < chain_one.chain.length; i++) {
-						new_block_buffers.push(chain_one.chain[i].buffer);
-					}
-
-					// Expect 3 buffers
-					assert.equal(new_block_buffers.length, 3);
-
-					callback(null, new_block_buffers);
+					done();
 				});
 
-				// Do a manual request for blocks
-				await chain_two.requestBlocks();
-
-				await chain_two.isValid();
-			}
+			});
 
 		});
 	});
