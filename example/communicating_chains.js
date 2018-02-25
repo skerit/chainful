@@ -1,3 +1,5 @@
+'use strict';
+
 var Chainful = require('../index.js'),
     crypto   = require('crypto'),
     ecdh     = crypto.createECDH('secp256k1');

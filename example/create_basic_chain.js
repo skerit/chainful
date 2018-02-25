@@ -1,3 +1,5 @@
+'use strict';
+
 var Chainful = require('../index.js'),
     tmp_dir,
     crypto   = require('crypto'),

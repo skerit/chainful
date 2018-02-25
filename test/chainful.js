@@ -1,3 +1,5 @@
+'use strict';
+
 var libpath = require('path'),
     assert  = require('assert'),
     crypto  = require('crypto'),
