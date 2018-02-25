@@ -335,7 +335,7 @@ describe('Chainful', function() {
 	describe('#setBlockRequester(requester_function)', function() {
 		it('should request blocks & add them', function(done) {
 
-			this.timeout(4000);
+			this.timeout(20000);
 
 			var ecdh = crypto.createECDH('secp256k1');
 
