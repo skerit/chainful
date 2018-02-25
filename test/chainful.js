@@ -330,7 +330,7 @@ describe('Chainful', function() {
 			let chain_two = new ChainfulNS.Chainful();
 
 			// Create & hash the first block in the first chain
-			chain_one.createGenesisBlock(async function gotBlock(err, block) {
+			chain_one.createGenesisBlock(function gotBlock(err, block) {
 
 				if (err) {
 					throw err;
