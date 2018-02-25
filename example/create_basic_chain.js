@@ -17,7 +17,17 @@ ecdh.generateKeys();
 
 // Get the keys
 let private_key = ecdh.getPrivateKey(null, 'compressed'),
-    public_key  = ecdh.getPublicKey(null, 'compressed');
+    public_key  = ecdh.getPublicKey(null, 'compressed'),
+    start       = Date.now();
+
+// The difficulty determines with how many zeroes the hash has to start
+// A difficulty of 2 takes about 3-500 attempts (0.1 - 0.3 seconds)
+// A difficulty of 3 takes about 3500-7000 attempts (1 - 2 seconds)
+// A difficulty of 4 takes about 27.000-230000 attempts (5 - 50 seconds)
+// A difficulty of 5 takes about 560.000-1.560.000 attempts (120 - 267 seconds-
+
+// The default is 2 and is also LOCKED in place, for now
+chain.difficulty = 2;
 
 // Create & hash the first block
 chain.createGenesisBlock(private_key, public_key, async function gotBlock(err, block) {
@@ -26,7 +36,7 @@ chain.createGenesisBlock(private_key, public_key, async function gotBlock(err, b
 		return console.error('Failed to create genesis block:', err);
 	}
 
-	console.log('Created genesis block', block.index);
+	console.log('Created genesis block', block.index, 'in', (Date.now() - start) / 1000, 'seconds, requiring', block.nonce, 'attempts');
 	console.log(' - Hash:', block.hash_string, '\n');
 
 	// Add the block to the chain
@@ -42,11 +52,14 @@ chain.createGenesisBlock(private_key, public_key, async function gotBlock(err, b
 	console.log('Created new transaction');
 	console.log(' - Signature:', transaction.signature_hex, '\n');
 
+	// Reset the start time
+	start = Date.now();
+
 	// Mine a new block with the current pending transactions
 	// (the one we just created)
 	block = await chain.minePendingTransactions(private_key, public_key);
 
-	console.log('Created second block', block.index);
+	console.log('Created second block', block.index, 'in', (Date.now() - start) / 1000, 'seconds, requiring', block.nonce, 'attempts');
 	console.log(' - Hash:', block.hash_string, '\n');
 
 	// Again: add the mined block to the chain
@@ -58,10 +71,13 @@ chain.createGenesisBlock(private_key, public_key, async function gotBlock(err, b
 	console.log('Created new transaction');
 	console.log(' - Signature:', transaction.signature_hex, '\n');
 
+	// Reset the start time
+	start = Date.now();
+
 	// Mine it again
 	block = await chain.minePendingTransactions(private_key, public_key);
 
-	console.log('Created third block', block.index);
+	console.log('Created third block', block.index, 'in', (Date.now() - start) / 1000, 'seconds, requiring', block.nonce, 'attempts');
 	console.log(' - Hash:', block.hash_string, '\n');
 
 	// Add it again
@@ -88,6 +104,7 @@ chain.createGenesisBlock(private_key, public_key, async function gotBlock(err, b
 
 			// Create a new chain
 			let new_chain = new Chainful.Chainful();
+			new_chain.difficulty = 2;
 
 			// And load it from the binary file
 			new_chain.loadChain(tmp_dir, function done(err) {
