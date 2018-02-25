@@ -421,11 +421,14 @@ describe('Chainful', function() {
 						callback(null, new_block_buffers);
 					});
 
-					chain_two.requestBlocks(function requested(err) {
+					chain_two.requestUpdate(function requested(err) {
 
 						if (err) {
 							return next(err);
 						}
+
+						// The second chain should now have 3 blocks
+						assert.equal(chain_two.chain.length, chain_one.chain.length, 'Chains did not synchronize correctly');
 
 						chain_two.isValid(function validated(err) {
 

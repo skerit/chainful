@@ -116,11 +116,12 @@ async function startSecondChain() {
 	});
 
 	// Do a manual request for blocks
-	await chain_two.requestBlocks();
+	await chain_two.requestUpdate();
 
 	console.log('Chain two has requested and received all missing blocks');
 
 	await chain_two.isValid();
 
-	console.log('Chain two is valid!')
+	console.log('Chain two is valid!');
+
 }
