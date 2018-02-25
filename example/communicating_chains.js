@@ -21,7 +21,7 @@ let chain_one = new Chainful.Chainful();
 let chain_two = new Chainful.Chainful();
 
 // Create & hash the first block in the first chain
-chain_one.createGenesisBlock(private_key_one, private_key_two, async function gotBlock(err, block) {
+chain_one.createGenesisBlock(private_key_one, public_key_one, async function gotBlock(err, block) {
 
 	if (err) {
 		return console.error('Failed to create genesis block:', err);
@@ -45,7 +45,7 @@ chain_one.createGenesisBlock(private_key_one, private_key_two, async function go
 
 	// Mine a new block with the current pending transactions
 	// (the one we just created)
-	block = await chain_one.minePendingTransactions(private_key_one, private_key_two);
+	block = await chain_one.minePendingTransactions(private_key_one, public_key_one);
 
 	console.log('Created second block', block.index);
 	console.log(' - Hash:', block.hash_string.slice(0, 16), '\n');
@@ -60,7 +60,7 @@ chain_one.createGenesisBlock(private_key_one, private_key_two, async function go
 	console.log(' - Signature:', transaction.signature_hex.slice(0, 16), '\n');
 
 	// Mine it again
-	block = await chain_one.minePendingTransactions(private_key_one, private_key_two);
+	block = await chain_one.minePendingTransactions(private_key_one, public_key_one);
 
 	console.log('Created third block', block.index);
 	console.log(' - Hash:', block.hash_string.slice(0, 16), '\n');

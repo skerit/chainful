@@ -21,7 +21,8 @@ let private_key = ecdh.getPrivateKey(null, 'compressed'),
     start       = Date.now();
 
 // The difficulty determines with how many zeroes the hash has to start
-// A difficulty of 2 takes about 3-500 attempts (0.1 - 0.3 seconds)
+// A difficulty of 1 takes about 1-50 attempts (0.03 - 0.1 seconds)
+// A difficulty of 2 takes about 3-700 attempts (0.1 - 0.3 seconds)
 // A difficulty of 3 takes about 3500-7000 attempts (1 - 2 seconds)
 // A difficulty of 4 takes about 27.000-230000 attempts (5 - 50 seconds)
 // A difficulty of 5 takes about 560.000-1.560.000 attempts (120 - 267 seconds-
