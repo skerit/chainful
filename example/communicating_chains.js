@@ -156,5 +156,9 @@ async function startSecondChain() {
 	// Let chain_two, which has a "wrong" block in its chain, request new blocks
 	await chain_two.requestUpdate();
 
-	console.log('Second chain has been updated and contains a fork');
+	console.log('Second chain has been updated and contains a fork, resolving...');
+
+	let switched_fork = await chain_two.resolveConflicts();
+
+	console.log('Switched to fork:', switched_fork);
 }

@@ -29,7 +29,7 @@ describe('Chainful', function() {
 
 	// There's lots of crypto work here, so it goes a bit slower than normal
 	// Don't nag about it
-	this.slow(2000);
+	this.slow(3000);
 
 	it('should load the namespace correctly', function() {
 
@@ -332,6 +332,14 @@ describe('Chainful', function() {
 		});
 	});
 
+	// Create the communicating chains
+	let chain_one,
+	    chain_two,
+	    private_key_one,
+	    public_key_one,
+	    private_key_two,
+	    public_key_two;
+
 	describe('#setBlockRequester(requester_function)', function() {
 		it('should request blocks & add them', function(done) {
 
@@ -343,17 +351,16 @@ describe('Chainful', function() {
 			ecdh.generateKeys();
 
 			// Get the keys for the first chain instance
-			let private_key_one = ecdh.getPrivateKey(null, 'compressed'),
-			    public_key_one  = ecdh.getPublicKey(null, 'compressed');
+			private_key_one = ecdh.getPrivateKey(null, 'compressed');
+			public_key_one  = ecdh.getPublicKey(null, 'compressed');
 
 			// Get the private keys for the second chain
 			ecdh.generateKeys();
-			let private_key_two = ecdh.getPrivateKey(null, 'compressed'),
-			    public_key_two  = ecdh.getPublicKey(null, 'compressed');
+			private_key_two = ecdh.getPrivateKey(null, 'compressed');
+			public_key_two  = ecdh.getPublicKey(null, 'compressed');
 
-			// Create the chains
-			let chain_one = new ChainfulNS.Chainful();
-			let chain_two = new ChainfulNS.Chainful();
+			chain_one = new ChainfulNS.Chainful();
+			chain_two = new ChainfulNS.Chainful();
 
 			// Create & hash the first block in the first chain
 			chain_one.createGenesisBlock(private_key_one, private_key_two, function gotBlock(err, block) {
@@ -411,6 +418,8 @@ describe('Chainful', function() {
 					chain_one.isValid(next);
 				}, function startSecondChain(next) {
 
+					var initial_test = true;
+
 					// First we'll add some logic to actually request the data
 					// Normally you would add some network logic here,
 					// but for this example we'll just go steal the blocks from block_one
@@ -439,8 +448,11 @@ describe('Chainful', function() {
 							new_block_buffers.push(chain_one.getByIndex(i).buffer);
 						}
 
-						// Expect 3 buffers
-						assert.equal(new_block_buffers.length, 3);
+						// Expect 3 buffers on the first test
+						if (initial_test) {
+							assert.equal(new_block_buffers.length, 3);
+							initial_test = false;
+						}
 
 						callback(null, new_block_buffers);
 					});
@@ -473,6 +485,78 @@ describe('Chainful', function() {
 					done();
 				});
 
+			});
+		});
+	});
+
+	describe('#resolveConflicts(callback)', function() {
+		it('should resolve forks', function(done) {
+
+			var c1_block1,
+			    c1_block2,
+			    c2_block1;
+
+			// First let's add some extra blocks to both chains
+			__Protoblast.Bound.Function.series(function addChainOneBlock1(next) {
+
+				chain_one.addTransaction({test: 'chain1extra1'}, private_key_one);
+
+				chain_one.minePendingTransactions(private_key_one, public_key_one).then(function(block) {
+					c1_block1 = block;
+					chain_one.addBlock(c1_block1);
+					next();
+				}).catch(function(err) {
+					next(err);
+				});
+			}, function addChainOneBlock2(next) {
+
+				chain_one.addTransaction({test: 'chain1extra2'}, private_key_one);
+
+				chain_one.minePendingTransactions(private_key_one, public_key_one).then(function(block) {
+					c1_block2 = block;
+					chain_one.addBlock(c1_block2);
+					next();
+				}).catch(function(err) {
+					next(err);
+				});
+			}, function addChainTwoBlock1(next) {
+
+				chain_two.addTransaction({test: 'chain2extra1'}, private_key_two);
+
+				chain_two.minePendingTransactions(private_key_two, public_key_two).then(function(block) {
+					c2_block1 = block;
+					chain_two.addBlock(c2_block1);
+					next();
+				}).catch(function(err) {
+					next(err);
+				});
+			}, function requestUpdate(next) {
+				chain_two.requestUpdate().then(function updated(value) {
+
+					assert.equal(chain_two.forks.length, 1, 'The second chain should have 1 fork by now');
+					next();
+
+				}).catch(function(err) {
+					next(err);
+				});
+			}, function resolveConflicts(next) {
+				chain_two.resolveConflicts(function resolved(err, switched) {
+
+					if (err) {
+						return next(err);
+					}
+
+					assert.equal(switched, true, 'Second chain should have switched to the fork');
+					assert.equal(chain_two.length, chain_one.length);
+					next();
+				});
+			}, function _done(err) {
+
+				if (err) {
+					throw err;
+				}
+
+				done();
 			});
 
 		});
