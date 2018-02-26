@@ -607,6 +607,22 @@ describe('Block', function() {
 		});
 	});
 
+	describe('#hash_string', function() {
+		it('should be undefined when it is not hashed', function() {
+			var new_block = new ChainfulNS.Block(main_chain);
+			assert.equal(new_block.hash_string, undefined);
+		});
+
+		it('should set the #hash buffer when being set', function() {
+			var new_block = new ChainfulNS.Block(main_chain);
+
+			// Now set it
+			new_block.hash_string = 'aabbcc';
+
+			assert.equal(new_block.hash.toString('hex'), new_block.hash_string);
+		});
+	});
+
 	describe('#transactions', function() {
 		it('should be an empty array for new blocks', function() {
 			var new_block = new ChainfulNS.Block(main_chain);
@@ -616,9 +632,59 @@ describe('Block', function() {
 
 	describe('#miner', function() {
 		it('should be a reference to the miner of the block', function() {
-			var last_block = main_chain.last_block;
+			var last_block = main_chain.last_block,
+			    transaction = last_block.transactions[0];
 
 			assert.equal(last_block.miner.equals(public_key), true);
+		});
+
+		it('should be null for non-mined blocks', function() {
+			var new_block = new ChainfulNS.Block(main_chain),
+			    transaction = new ChainfulNS.Transaction(main_chain);
+
+			// There can't be a miner yet
+			assert.equal(new_block.miner, null);
+
+			// Add a new transaction
+			new_block.transactions.push(transaction);
+
+			// Miner should still be null
+			assert.equal(new_block.miner, null);
+
+			// Mess with the hash property
+			new_block.hash = 'aabbcc';
+
+			// There still shouldn't be a miner
+			assert.equal(new_block.miner, null);
+		});
+	});
+
+	describe('#transaction_buffers', function() {
+
+		it('should return the binary transactions', function() {
+			var new_block = new ChainfulNS.Block(main_chain),
+			    transaction = new ChainfulNS.Transaction(main_chain),
+			    buffers;
+
+			// Add a new transaction
+			new_block.transactions.push(transaction);
+
+			// This should throw an error
+			assert.throws(function() {
+				return new_block.transaction_buffers;
+			});
+
+			// Sign the transaction
+			transaction.sign(private_key, public_key);
+
+			// Get the buffers
+			buffers = new_block.transaction_buffers;
+
+			assert.equal(Buffer.isBuffer(buffers[0]), true, 'Expected an array of buffers');
+
+			// Setting the transaction_buffers should return them later
+			new_block.transaction_buffers = buffers;
+			assert.equal(new_block.transaction_buffers, buffers, 'Getting the buffers again should return the same instance');
 		});
 	});
 
