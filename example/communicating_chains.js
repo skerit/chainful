@@ -4,6 +4,19 @@ var Chainful = require('../index.js'),
     crypto   = require('crypto'),
     ecdh     = crypto.createECDH('secp256k1');
 
+process.on('uncaughtException', function onException(error) {
+	console.log('');
+	console.error('Uncaught Exception!')
+	console.error(error);
+});
+
+
+process.on('unhandledRejection', function onRejection(error) {
+	console.log('');
+	console.error('Uncaught Exception!')
+	console.error(error);
+});
+
 // Generate some testkeys
 ecdh.generateKeys();
 
@@ -106,8 +119,8 @@ async function startSecondChain() {
 		// As I said: you would probably add network logic here.
 		// So: send a request to another network for the wanted blocks,
 		// and then receive them over a Socket as binary data
-		for (; i < chain_one.chain.length; i++) {
-			new_block_buffers.push(chain_one.chain[i].buffer);
+		for (; i < chain_one.length; i++) {
+			new_block_buffers.push(chain_one.getByIndex(i).buffer);
 		}
 
 		console.log('   » Found', new_block_buffers.length, 'new blocks for the second chain\n');
@@ -124,4 +137,24 @@ async function startSecondChain() {
 
 	console.log('Chain two is valid!');
 
+	// Now we'll test fork behaviour
+
+	// Mine 2 new blocks on chain one and add them
+	chain_one.addTransaction({test: 1}, private_key_one);
+	let block_one = await chain_one.minePendingTransactions(private_key_one, public_key_one);
+	chain_one.addBlock(block_one);
+
+	chain_one.addTransaction({test: 1}, private_key_one);
+	block_one = await chain_one.minePendingTransactions(private_key_one, public_key_one);
+	chain_one.addBlock(block_one);
+
+	// Mine 1 new block on chain 2
+	chain_two.addTransaction({test: 1}, private_key_two);
+	let block_two = await chain_two.minePendingTransactions(private_key_two, public_key_two);
+	chain_two.addBlock(block_two);
+
+	// Let chain_two, which has a "wrong" block in its chain, request new blocks
+	await chain_two.requestUpdate();
+
+	console.log('Second chain has been updated and contains a fork');
 }
