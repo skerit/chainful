@@ -74,7 +74,6 @@ describe('Chainful', function() {
 				assert.equal(block.index, 0, 'The genesis block should have index 0');
 				assert.equal(block.parent, undefined, 'The genesis block should have no parent');
 				assert.equal(typeof block.hash_string, 'string', 'The genesis block should have been mined and have a hash');
-				assert.equal(block.transactions.length, 1, 'The genesis block should have only 1 transaction');
 
 				assert.equal(main_chain.length, 0, 'The genesis block should be added to the chain manually');
 
