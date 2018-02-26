@@ -583,4 +583,35 @@ describe('Block', function() {
 		});
 	});
 
+	describe('#mined_locally', function() {
+		it('should be false for unmined blocks', function() {
+			var new_block = new ChainfulNS.Block(main_chain);
+			assert.equal(new_block.mined_locally, false);
+		});
+	});
+
+	describe('#parent_hash_string', function() {
+		it('should be an empty string when there is no parent', function() {
+			var new_block = new ChainfulNS.Block(main_chain);
+			assert.equal(new_block.parent_hash_string, '');
+		});
+
+		it('should set the #parent_hash buffer when being set', function() {
+			var new_block = new ChainfulNS.Block(main_chain);
+			assert.equal(new_block.parent_hash_string, '');
+
+			// Now set it
+			new_block.parent_hash_string = 'aabbcc';
+
+			assert.equal(new_block.parent_hash.toString('hex'), new_block.parent_hash_string);
+		});
+	});
+
+	describe('#transactions', function() {
+		it('should be an empty array for new blocks', function() {
+			var new_block = new ChainfulNS.Block(main_chain);
+			assert.equal(new_block.transactions.length, 0);
+		});
+	});
+
 });
