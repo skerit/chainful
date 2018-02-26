@@ -561,3 +561,26 @@ describe('Chainful', function() {
 		});
 	});
 });
+
+describe('Block', function() {
+
+	describe('#parent', function() {
+		it('should try to get the parent by index', function() {
+			var last_block = main_chain.last_block,
+			    new_block = new ChainfulNS.Block(main_chain);
+
+			// We did not pass the parent to the Block constructor,
+			// and it doesn't have an index, so the parent is null
+			assert.equal(new_block.parent, undefined, 'New block should not have a parent yet');
+			assert.equal(new_block.index, undefined, 'New block should have no index set');
+
+			// Now set the index
+			new_block.index = last_block.index + 1;
+
+			assert.equal(typeof new_block.index, 'number', 'Block index should now be a number');
+			assert.equal(new_block.index, last_block.index + 1);
+			assert.equal(new_block.parent, last_block);
+		});
+	});
+
+});
