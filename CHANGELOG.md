@@ -11,7 +11,7 @@
 * Transactions older than 1 day will be discarded
 * Mining an empty block will throw an error
 * Added a `Blockchain` class which will hold blocks instead of a regular array
-* Added support for forks
+* Added support for forks & fork resolving
 
 ## 0.1.0 (2018-02-24)
 
