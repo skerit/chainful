@@ -614,4 +614,12 @@ describe('Block', function() {
 		});
 	});
 
+	describe('#miner', function() {
+		it('should be a reference to the miner of the block', function() {
+			var last_block = main_chain.last_block;
+
+			assert.equal(last_block.miner.equals(public_key), true);
+		});
+	});
+
 });
