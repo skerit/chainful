@@ -11,7 +11,7 @@
 	"bin"             : "bin/execbin.js",
 	"dependencies"    : {
 		"jsrsasign"   : "~8.0.6",
-		"msgpack"     : "~1.0.2",
+		"msgpack-js"  : "~0.3.0",
 		"protoblast"  : "~0.5.1"
 	},
 	"devDependencies" : {

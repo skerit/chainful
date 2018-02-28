@@ -1,5 +1,7 @@
 ## 0.2.1 (WIP)
 
+* Switched to `msgpack-js`
+
 ## 0.2.0 (2018-02-28)
 
 * Remove `elliptic` dependency, decompressing a public key can be done using `crypto`
