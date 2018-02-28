@@ -560,6 +560,19 @@ describe('Chainful', function() {
 
 		});
 	});
+
+	describe('#getPublicKey(private_key)', function() {
+		it('should return the public key for a private key string', function() {
+			var result;
+
+			result = main_chain.getPublicKey(private_key.toString('hex'));
+			assert.equal(result.equals(public_key), true);
+
+			result = main_chain.getPublicKey(private_key);
+			assert.equal(result.equals(public_key), true);
+
+		});
+	});
 });
 
 describe('Block', function() {
@@ -687,5 +700,4 @@ describe('Block', function() {
 			assert.equal(new_block.transaction_buffers, buffers, 'Getting the buffers again should return the same instance');
 		});
 	});
-
 });
