@@ -62,15 +62,14 @@ npm install chainful
 
 ## Usage
 
-There's [an example on how to create a basic chain](https://github.com/skerit/chainful/blob/master/example/create_basic_chain.js) in the `example` folder.
+There's [an example on how to create a basic chain](https://github.com/skerit/chainful/blob/master/example/create_basic_chain.js) and [an example on how to communicate between 2 chains](https://github.com/skerit/chainful/blob/master/example/communicating_chains.js) in the `example` folder.
 
 ## Project future
 
 The next big things on the todo list:
 
-* Adding methods that can be used to sync with other peers
-* Handling forks
-* ...
+* Better fork resolving
+* Being able to use partial chains
 
 ## Contributing
 Contributions are REALLY welcome.

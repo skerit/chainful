@@ -1,4 +1,4 @@
-## 0.2.0 (WIP)
+## 0.2.0 (2018-02-28)
 
 * Remove `elliptic` dependency, decompressing a public key can be done using `crypto`
 * Add support for requesting & receiving new blocks
