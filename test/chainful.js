@@ -30,6 +30,7 @@ describe('Chainful', function() {
 	// There's lots of crypto work here, so it goes a bit slower than normal
 	// Don't nag about it
 	this.slow(3000);
+	this.timeout(10000);
 
 	it('should load the namespace correctly', function() {
 
@@ -60,7 +61,7 @@ describe('Chainful', function() {
 	describe('#createGenesisBlock', function() {
 
 		it('should create the first block of a chain', function(done) {
-			this.timeout(5000);
+			this.timeout(10000);
 
 			main_chain.createGenesisBlock(private_key, public_key, function gotBlock(err, block) {
 
@@ -115,6 +116,8 @@ describe('Chainful', function() {
 	});
 
 	describe('#minePendingTransactions()', function() {
+		this.timeout(10000);
+
 		it('should mine the pending transactions into a new block', function(done) {
 
 			main_chain.minePendingTransactions(private_key, public_key, function gotBlock(err, block) {
@@ -489,6 +492,8 @@ describe('Chainful', function() {
 	});
 
 	describe('#resolveConflicts(callback)', function() {
+		this.timeout(10000);
+
 		it('should resolve forks', function(done) {
 
 			var c1_block1,
