@@ -1,6 +1,7 @@
 ## 0.2.1 (WIP)
 
 * Switched from `msgpack` to `msgpack-js`
+* Emit `added_block` or `added_fork_block` when a new block is added to the chain
 
 ## 0.2.0 (2018-02-28)
 
