@@ -1,6 +1,6 @@
 ## 0.2.1 (WIP)
 
-* Switched to `msgpack-js`
+* Switched from `msgpack` to `msgpack-js`
 
 ## 0.2.0 (2018-02-28)
 
