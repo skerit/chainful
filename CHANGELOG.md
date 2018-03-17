@@ -1,4 +1,4 @@
-## 0.2.2 (WIP)
+## 0.2.2 (2018-03-17)
 
 * Forked `msgpack-js` to fix trailing byte error throwing 
 
