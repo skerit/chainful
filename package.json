@@ -11,7 +11,7 @@
 	"bin"             : "bin/execbin.js",
 	"dependencies"    : {
 		"jsrsasign"   : "~8.0.6",
-		"msgpack-js"  : "skerit/msgpack-js#ec363bf",
+		"msgpack-js"  : "skerit/msgpack-js#6347964",
 		"protoblast"  : "~0.5.2"
 	},
 	"devDependencies" : {
