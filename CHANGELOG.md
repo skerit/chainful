@@ -1,4 +1,4 @@
-## 0.2.3 (WIP)
+## 0.2.3 (2019-01-03)
 
 * Bumped `protoblast` version to v0.6.3
 * Make more methods return a pledge
