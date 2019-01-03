@@ -1,3 +1,8 @@
+## 0.2.3 (WIP)
+
+* Bumped `protoblast` version to v0.6.3
+* Make more methods return a pledge
+
 ## 0.2.2 (2018-03-17)
 
 * Forked `msgpack-js` to fix trailing byte error throwing 

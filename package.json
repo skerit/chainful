@@ -2,7 +2,7 @@
 	"name"            : "chainful",
 	"description"     : "Implement your own blockchain",
 	"author"          : "Jelle De Loecker <jelle@develry.be>",
-	"version"         : "0.2.2",
+	"version"         : "0.2.3-alpha",
 	"repository"      : "skerit/chainful",
 	"license"         : "MIT",
 	"keywords"        : ["blockchain"],
@@ -12,7 +12,7 @@
 	"dependencies"    : {
 		"jsrsasign"   : "~8.0.6",
 		"msgpack-js"  : "skerit/msgpack-js#6347964",
-		"protoblast"  : "~0.5.2"
+		"protoblast"  : "~0.6.3"
 	},
 	"devDependencies" : {
 		"coveralls"   : "^2.11.6",
